@@ -6,6 +6,8 @@
 @email    howe.r.j.89@gmail.com 
 **/  
 
+#define _POSIX_C_SOURCE 199309L
+
 /*** module to test ***/
 #include "libforth.h"
 /**********************/
@@ -16,7 +18,26 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <time.h>
+#include <sys/time.h>
+
+// thanks @jbenet -- https://gist.github.com/jbenet/1087739
+
+void current_utc_time(struct timespec* ts)
+{
+  #ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    ts->tv_sec = mts.tv_sec;
+    ts->tv_nsec = mts.tv_nsec;
+  #else
+    clock_gettime(CLOCK_REALTIME, ts);
+  #endif
+}
 
 /*** very minimal test framework ***/
 
@@ -215,6 +236,24 @@ static int forth_function_2(forth_t *f)
 	return 0;
 }
 
+double _duration = 0;
+uint64_t _count = 0;
+
+int _forth_eval(forth_t *o, const char *s)
+{
+  int r;
+  struct timespec ts1;
+  struct timespec ts2;
+  current_utc_time(&ts1);
+  r = forth_eval(o, s);
+  current_utc_time(&ts2);
+
+  _duration = (ts2.tv_nsec - ts1.tv_nsec) / 1000.0;
+  _count += 1;
+
+  return r;
+}
+
 int libforth_unit_tests(int keep_files, int colorize, int silent)
 {
 	tb.is_silent = silent;
@@ -256,14 +295,14 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 
 		/* test setup, simple tests of push/pop interface */
 		test(&tb, 0 == forth_stack_position(f));
-		test(&tb, forth_eval(f, "here ")  >= 0);
+		test(&tb, _forth_eval(f, "here ")  >= 0);
 		state(&tb, here = forth_pop(f));
 		state(&tb, forth_push(f, here));
-		test(&tb, forth_eval(f, "2 2 + ") >= 0);
+		test(&tb, _forth_eval(f, "2 2 + ") >= 0);
 		test(&tb, forth_pop(f) == 4);
 		/* define a word, call that word, pop result */
 		test(&tb, !forth_find(f, "unit-01"));
-		test(&tb, forth_eval(f, ": unit-01 69 ; unit-01 ") >= 0);
+		test(&tb, _forth_eval(f, ": unit-01 69 ; unit-01 ") >= 0);
 		test(&tb, forth_find(f,  "unit-01"));
 		test(&tb, !forth_find(f, "unit-01 ")); /* notice the trailing space */
 		test(&tb, forth_pop(f) == 69);
@@ -272,7 +311,7 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 		/* constants */
 		test(&tb, forth_define_constant(f, "constant-1", 0xAA0A) >= 0);
 		test(&tb, forth_define_constant(f, "constant-2", 0x5055) >= 0);
-		test(&tb, forth_eval(f, "constant-1 constant-2 or") >= 0);
+		test(&tb, _forth_eval(f, "constant-1 constant-2 or") >= 0);
 		test(&tb, forth_pop(f) == 0xFA5F);
 
 		/* string input */
@@ -288,7 +327,7 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 		/* more simple tests of arithmetic */
 		state(&tb, forth_push(f, 99));
 		state(&tb, forth_push(f, 98));
-		test(&tb, forth_eval(f, "+") >= 0);
+		test(&tb, _forth_eval(f, "+") >= 0);
 		test(&tb, forth_pop(f) == 197);
 		test(&tb, 1 == forth_stack_position(f)); /* "here" still on stack */
 		test(&tb, here == forth_pop(f));
@@ -329,7 +368,7 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 		must(&tb, f);
 		/* the word "unit-01" was defined earlier */
 		test(&tb, forth_find(f, "unit-01"));
-		test(&tb, forth_eval(f, "unit-01 constant-1 *") >= 0);
+		test(&tb, _forth_eval(f, "unit-01 constant-1 *") >= 0);
 		test(&tb, forth_pop(f) == 69 * 0xAA0A);
 		test(&tb, 0 == forth_stack_position(f));
 
@@ -367,43 +406,43 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 
 		/* here we test if...else...then statements and hex conversion,
 		 * this also tests >mark indirectly */
-		test(&tb, forth_eval(f, ": if-test if 0x55 else 0xAA then ;") >= 0);
-		test(&tb, forth_eval(f, "0 if-test") >= 0);
+		test(&tb, _forth_eval(f, ": if-test if 0x55 else 0xAA then ;") >= 0);
+		test(&tb, _forth_eval(f, "0 if-test") >= 0);
 		test(&tb, forth_pop(f) == 0xAA);
 		state(&tb, forth_push(f, 1));
-		test(&tb, forth_eval(f, "if-test") >= 0);
+		test(&tb, _forth_eval(f, "if-test") >= 0);
 		test(&tb, forth_pop(f) == 0x55);
 
 		/* simple loop tests */
-		test(&tb, forth_eval(f, " : loop-test begin 1 + dup 10 u> until ;") >= 0);
-		test(&tb, forth_eval(f, " 1 loop-test") >= 0);
+		test(&tb, _forth_eval(f, " : loop-test begin 1 + dup 10 u> until ;") >= 0);
+		test(&tb, _forth_eval(f, " 1 loop-test") >= 0);
 		test(&tb, forth_pop(f) == 11);
-		test(&tb, forth_eval(f, " 39 loop-test") >= 0);
+		test(&tb, _forth_eval(f, " 39 loop-test") >= 0);
 		test(&tb, forth_pop(f) == 40);
 
 		/* rot and comments */
-		test(&tb, forth_eval(f, " 1 2 3 rot ( 1 2 3 -- 2 3 1 )") >= 0);
+		test(&tb, _forth_eval(f, " 1 2 3 rot ( 1 2 3 -- 2 3 1 )") >= 0);
 		test(&tb, forth_pop(f) == 1);
 		test(&tb, forth_pop(f) == 3);
 		test(&tb, forth_pop(f) == 2);
 
 		/* -rot */
-		test(&tb, forth_eval(f, " 1 2 3 -rot ") >= 0);
+		test(&tb, _forth_eval(f, " 1 2 3 -rot ") >= 0);
 		test(&tb, forth_pop(f) == 2);
 		test(&tb, forth_pop(f) == 1);
 		test(&tb, forth_pop(f) == 3);
 
 		/* nip */
-		test(&tb, forth_eval(f, " 3 4 5 nip ") >= 0);
+		test(&tb, _forth_eval(f, " 3 4 5 nip ") >= 0);
 		test(&tb, forth_pop(f) == 5);
 		test(&tb, forth_pop(f) == 3);
 
 		/* allot */
-		test(&tb, forth_eval(f, " here 32 allot here swap - ") >= 0);
+		test(&tb, _forth_eval(f, " here 32 allot here swap - ") >= 0);
 		test(&tb, forth_pop(f) == 32);
 
 		/* tuck */
-		test(&tb, forth_eval(f, " 67 23 tuck ") >= 0);
+		test(&tb, _forth_eval(f, " 67 23 tuck ") >= 0);
 		test(&tb, forth_pop(f) == 23);
 		test(&tb, forth_pop(f) == 67);
 		test(&tb, forth_pop(f) == 23);
@@ -423,19 +462,19 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 		 * 	- octal   0[0-7]*
 		 * 	- decimal [1-9][0-9]* 
 		 */
-		test(&tb, forth_eval(f, " base @ 0 = ") >= 0);
+		test(&tb, _forth_eval(f, " base @ 0 = ") >= 0);
 		test(&tb, forth_pop(f));
 
 		/* the invalid flag should not be set */
-		test(&tb, forth_eval(f, " `invalid @ 0 = ") >= 0);
+		test(&tb, _forth_eval(f, " `invalid @ 0 = ") >= 0);
 		test(&tb, forth_pop(f));
 
 		/* source id should be -1 (reading from string) */
-		test(&tb, forth_eval(f, " `source-id @ -1 = ") >= 0);
+		test(&tb, _forth_eval(f, " `source-id @ -1 = ") >= 0);
 		test(&tb, forth_pop(f));
 
 		/* 0 call should fail, returning non zero */
-		test(&tb, forth_eval(f, "0 call") >= 0);
+		test(&tb, _forth_eval(f, "0 call") >= 0);
 		test(&tb, forth_pop(f)); 
 
 		state(&tb, forth_free(f));
@@ -454,16 +493,16 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 
 		/* 0 call should correspond to the first function, which just
 		 * pushes 123 */
-		test(&tb, forth_eval(f, "0 call") >= 0);
+		test(&tb, _forth_eval(f, "0 call") >= 0);
 		test(&tb, !forth_pop(f));
 		test(&tb, 123 == forth_pop(f));
 
 		/* 1 call corresponds to the second function... */
-		test(&tb, forth_eval(f, "1 call") >= 0);
+		test(&tb, _forth_eval(f, "1 call") >= 0);
 		test(&tb, !forth_pop(f));
 		test(&tb, 789 == forth_pop(f));
 
-		test(&tb, forth_eval(f, "2 call") >= 0);
+		test(&tb, _forth_eval(f, "2 call") >= 0);
 		/* call signals failure by returning non zero */
 		test(&tb, forth_pop(f)); 
 
@@ -499,6 +538,9 @@ int libforth_unit_tests(int keep_files, int colorize, int silent)
 		if(!keep_files)
 			state(&tb, remove("unit.core"));
 	}
+
+  printf("=====> time per forth_eval: %f us \n", (_duration/_count));
+
 	return !!unit_test_end(&tb, "libforth");
 }
 

@@ -2614,6 +2614,7 @@ instruction, and would be a useful abstraction.
 **/
 
 		case SYSTEM:  f = system(forth_get_string(o, &on_error, &S, f)); break;
+
 		case FCLOSE:  
 			      errno = 0;
 			      f = fclose((FILE*)f) ? ferrno() : 0;       
