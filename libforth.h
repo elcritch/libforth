@@ -66,7 +66,7 @@ See:
 For more information and alternatives.
 
 **/
-#define IS_BIG_ENDIAN (!(union { uint16_t u16; uint8_t c; }){ .u16 = 1 }.c)
+// #define IS_BIG_ENDIAN (!(union { uint16_t u16; uint8_t c; }){ .u16 = 1 }.c)
 
 /**
 @brief Functions matching this typedef can be called via the CALL instruction.
@@ -119,21 +119,21 @@ if most compilers support the extension.
 this after fatal() is called. 
 @param FMT printf style format string 
 **/
-#define fatal(FMT,...)   forth_logger("fatal",  __func__, __LINE__, FMT, __VA_ARGS__)
+// #define fatal(FMT,...)   forth_logger("fatal",  __func__, __LINE__, FMT, __VA_ARGS__)
 
 /**
 @brief Variadic macro for handling error printing information
 @note Use this for recoverable errors
 @param FMT printf style format string 
 **/
-#define error(FMT,...)   forth_logger("error",  __func__, __LINE__, FMT, __VA_ARGS__)
+// #define error(FMT,...)   forth_logger("error",  __func__, __LINE__, FMT, __VA_ARGS__)
 
 /**
 @brief Variadic macro for handling warnings
 @note Use this for minor problems, for example, some optional component failed.
 @param FMT printf style format string 
 **/
-#define warning(FMT,...) forth_logger("warning",__func__, __LINE__, FMT, __VA_ARGS__)
+// #define warning(FMT,...) forth_logger("warning",__func__, __LINE__, FMT, __VA_ARGS__)
 
 /**
 @brief Variadic macro for notes
@@ -141,7 +141,7 @@ this after fatal() is called.
 opening up a new file. It should be used sparingly.
 @param FMT printf style format string 
 **/
-#define note(FMT,...)    forth_logger("note",   __func__, __LINE__, FMT, __VA_ARGS__)
+// #define note(FMT,...)    forth_logger("note",   __func__, __LINE__, FMT, __VA_ARGS__)
 
 /**
 @brief Variadic macro for debugging information.
@@ -150,7 +150,7 @@ present or removed arbitrarily between releases. This macro can be used liberall
 @warning May produce copious amounts of output.
 @param FMT printf style format string 
 **/
-#define debug(FMT,...)   forth_logger("debug",  __func__, __LINE__, FMT, __VA_ARGS__)
+// #define debug(FMT,...)   forth_logger("debug",  __func__, __LINE__, FMT, __VA_ARGS__)
 
 /**
 @brief These are the possible options for the debug registers. Higher levels
