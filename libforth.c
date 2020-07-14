@@ -260,7 +260,7 @@ This file implements a Forth library, so a Forth interpreter can be embedded
 in another application, as such a subset of the functions in this file are
 exported, and are documented in the *libforth.h* header 
 **/
-#include "libforth.h"
+// #include "libforth.h"
 
 /**
 We try to make good use of the C library as even microcontrollers have enough
@@ -269,17 +269,17 @@ setup. The only time allocations are explicitly done is when the virtual
 machine image is initialized, after this the VM does not allocate any
 more memory.
 **/
-#include <assert.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-#include <setjmp.h>
-#include <time.h>
+// #include <assert.h>
+// #include <stdbool.h>
+// #include <stdarg.h>
+// #include <ctype.h>
+// #include <errno.h>
+// #include <limits.h>
+// #include <signal.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <setjmp.h>
+// #include <time.h>
 
 /**
 Traditionally Forth implementations were the only program running on the
@@ -586,9 +586,9 @@ deal with file input and output (such as open-file).
 @note It might be worth adding more *fams*, which **fopen** can accept.
 **/
 static const char *fams[] = { 
-	[FAM_WO] = "wb", 
-	[FAM_RO] = "rb", 
-	[FAM_RW] = "w+b", 
+	/* [FAM_WO] =*/  "wb", 
+	/* [FAM_RO] =*/  "rb", 
+	/* [FAM_RW] =*/  "w+b", 
 	NULL 
 };
 
@@ -650,14 +650,14 @@ initialization, the **ENDIAN** field is filled in then as it seems impossible
 to determine the endianess of the target at compile time. 
 **/
 static const uint8_t header[MAX_HEADER_FIELD] = {
-	[MAGIC0]    = 0xFF,
-	[MAGIC1]    = '4',
-	[MAGIC2]    = 'T',
-	[MAGIC3]    = 'H',
-	[CELL_SIZE] = sizeof(forth_cell_t),
-	[VERSION]   = FORTH_CORE_VERSION,
-	[ENDIAN]    = -1,
-	[LOG2_SIZE]  = -1 
+	/* [MAGIC0]     = */ 0xFF,
+	/* [MAGIC1]     = */ '4',
+	/* [MAGIC2]     = */ 'T',
+	/* [MAGIC3]     = */ 'H',
+	/* [CELL_SIZE]  = */ sizeof(forth_cell_t),
+	/* [VERSION]    = */ FORTH_CORE_VERSION,
+	/* [ENDIAN]     = */ -1,
+	/* [LOG2_SIZE]  = */ -1 
 };
 
 /**
@@ -764,48 +764,60 @@ More information about X-Macros can be found here:
 
 **/
 
-#define XMACRO_REGISTERS \
- X("h",               DIC,            6,   "dictionary pointer")\
- X("r",               RSTK,           7,   "return stack pointer")\
- X("state",           STATE,          8,   "interpreter state")\
- X("base",            BASE,           9,   "base conversion variable")\
- X("pwd",             PWD,            10,  "pointer to previous word")\
- X("`source-id",      SOURCE_ID,      11,  "input source selector")\
- X("`sin",            SIN,            12,  "string input pointer")\
- X("`sidx",           SIDX,           13,  "string input index")\
- X("`slen",           SLEN,           14,  "string input length")\
- X("`start-address",  START_ADDR,     15,  "pointer to start of VM")\
- X("`fin",            FIN,            16,  "file input pointer")\
- X("`fout",           FOUT,           17,  "file output pointer")\
- X("`stdin",          STDIN,          18,  "file pointer to stdin")\
- X("`stdout",         STDOUT,         19,  "file pointer to stdout")\
- X("`stderr",         STDERR,         20,  "file pointer to stderr")\
- X("`argc",           ARGC,           21,  "argument count")\
- X("`argv",           ARGV,           22,  "arguments")\
- X("`debug",          DEBUG,          23,  "turn debugging on/off if enabled")\
- X("`invalid",        INVALID,        24,  "non-zero on serious error")\
- X("`top",            TOP,            25,  "*stored* version of top of stack")\
- X("`instruction",    INSTRUCTION,    26,  "start up instruction")\
- X("`stack-size",     STACK_SIZE,     27,  "size of the stacks")\
- X("`error-handler",  ERROR_HANDLER,  28,  "actions to take on error")\
- X("`handler",        THROW_HANDLER,  29,  "exception handler is stored here")\
- X("`signal",         SIGNAL_HANDLER, 30,  "signal handler")\
- X("`x",              SCRATCH_X,      31,  "scratch variable x")
+// #define XMACRO_REGISTERS \
+//  X("h",               DIC,            6,   "dictionary pointer")\
+//  X("r",               RSTK,           7,   "return stack pointer")\
+//  X("state",           STATE,          8,   "interpreter state")\
+//  X("base",            BASE,           9,   "base conversion variable")\
+//  X("pwd",             PWD,            10,  "pointer to previous word")\
+//  X("`source-id",      SOURCE_ID,      11,  "input source selector")\
+//  X("`sin",            SIN,            12,  "string input pointer")\
+//  X("`sidx",           SIDX,           13,  "string input index")\
+//  X("`slen",           SLEN,           14,  "string input length")\
+//  X("`start-address",  START_ADDR,     15,  "pointer to start of VM")\
+//  X("`fin",            FIN,            16,  "file input pointer")\
+//  X("`fout",           FOUT,           17,  "file output pointer")\
+//  X("`stdin",          STDIN,          18,  "file pointer to stdin")\
+//  X("`stdout",         STDOUT,         19,  "file pointer to stdout")\
+//  X("`stderr",         STDERR,         20,  "file pointer to stderr")\
+//  X("`argc",           ARGC,           21,  "argument count")\
+//  X("`argv",           ARGV,           22,  "arguments")\
+//  X("`debug",          DEBUG,          23,  "turn debugging on/off if enabled")\
+//  X("`invalid",        INVALID,        24,  "non-zero on serious error")\
+//  X("`top",            TOP,            25,  "*stored* version of top of stack")\
+//  X("`instruction",    INSTRUCTION,    26,  "start up instruction")\
+//  X("`stack-size",     STACK_SIZE,     27,  "size of the stacks")\
+//  X("`error-handler",  ERROR_HANDLER,  28,  "actions to take on error")\
+//  X("`handler",        THROW_HANDLER,  29,  "exception handler is stored here")\
+//  X("`signal",         SIGNAL_HANDLER, 30,  "signal handler")\
+//  X("`x",              SCRATCH_X,      31,  "scratch variable x")
 
 /**
 @brief The virtual machine registers used by the Forth virtual machine.
 **/
+// enum registers {
+// #define X(NAME, ENUM, VALUE, HELP) ENUM = VALUE,
+// 	XMACRO_REGISTERS
+// #undef X
+// };
 enum registers {
-#define X(NAME, ENUM, VALUE, HELP) ENUM = VALUE,
-	XMACRO_REGISTERS
-#undef X
+
+ DIC = 6, RSTK = 7, STATE = 8, BASE = 9, PWD = 10, SOURCE_ID = 11, SIN = 12, SIDX = 13, SLEN = 14, START_ADDR = 15, FIN = 16, FOUT = 17, STDIN = 18, STDOUT = 19, STDERR = 20, ARGC = 21, ARGV = 22, DEBUG = 23, INVALID = 24, TOP = 25, INSTRUCTION = 26, STACK_SIZE = 27, ERROR_HANDLER = 28, THROW_HANDLER = 29, SIGNAL_HANDLER = 30, SCRATCH_X = 31,
+
 };
 
-static const char *register_names[] = { /**< names of VM registers */
-#define X(NAME, ENUM, VALUE, HELP) NAME,
-	XMACRO_REGISTERS
-#undef X
-	NULL
+
+// static const char *register_names[] = { /**< names of VM registers */
+// #define X(NAME, ENUM, VALUE, HELP) NAME,
+// 	XMACRO_REGISTERS
+// #undef X
+// 	NULL
+// };
+static const char *register_names[] = {
+
+ "h", "r", "state", "base", "pwd", "`source-id", "`sin", "`sidx", "`slen", "`start-address", "`fin", "`fout", "`stdin", "`stdout", "`stderr", "`argc", "`argv", "`debug", "`invalid", "`top", "`instruction", "`stack-size", "`error-handler", "`handler", "`signal", "`x",
+
+ NULL
 };
 
 /** 
@@ -863,76 +875,76 @@ up for debugging purposes (like **pnum**).
  
 **/
 
-#define XMACRO_INSTRUCTIONS\
- X(0, PUSH,      "push",      " -- u : push a literal")\
- X(0, CONST,     "const",     " -- u : push a literal")\
- X(0, RUN,       "run",       " -- : run a Forth word")\
- X(0, DEFINE,    "define",    " -- : make new Forth word, set compile mode")\
- X(0, IMMEDIATE, "immediate", " -- : make a Forth word immediate")\
- X(0, READ,      "read",      " c\" xxx\" -- : read Forth word, execute it")\
- X(1, LOAD,      "@",         "addr -- u : load a value")\
- X(2, STORE,     "!",         "u addr -- : store a value")\
- X(1, CLOAD,     "c@",        "c-addr -- u : load character value")\
- X(2, CSTORE,    "c!",        "u c-addr -- : store character value")\
- X(2, SUB,       "-",         "u1 u2 -- u3 : subtract u2 from u1 yielding u3")\
- X(2, ADD,       "+",         "u u -- u : add two values")\
- X(2, AND,       "and",       "u u -- u : bitwise and of two values")\
- X(2, OR,        "or",        "u u -- u : bitwise or of two values")\
- X(2, XOR,       "xor",       "u u -- u : bitwise exclusive or of two values")\
- X(1, INV,       "invert",    "u -- u : invert bits of value")\
- X(2, SHL,       "lshift",    "u1 u2 -- u3 : left shift u1 by u2")\
- X(2, SHR,       "rshift",    "u1 u2 -- u3 : right shift u1 by u2")\
- X(2, MUL,       "*",         "u u -- u : multiply to values")\
- X(2, DIV,       "/",         "u1 u2 -- u3 : divide u1 by u2 yielding u3")\
- X(2, ULESS,     "u<",        "u u -- bool : unsigned less than")\
- X(2, UMORE,     "u>",        "u u -- bool : unsigned greater than")\
- X(0, EXIT,      "exit",      " -- : return from a word definition")\
- X(0, KEY,       "key",       " -- char : get one character of input")\
- X(1, EMIT,      "_emit",     " char -- status : get one character of input")\
- X(0, FROMR,     "r>",        " -- u, R: u -- : move from return stack")\
- X(1, TOR,       ">r",        "u --, R: -- u : move to return stack")\
- X(0, BRANCH,    "branch",    " -- : unconditional branch")\
- X(1, QBRANCH,   "?branch",   "u -- : branch if u is zero")\
- X(1, PNUM,      "(.)",       "u -- n : print a number returning an error on failure")\
- X(1, COMMA,     ",",         "u -- : write a value into the dictionary")\
- X(2, EQUAL,     "=",         "u u -- bool : compare two values for equality")\
- X(2, SWAP,      "swap",      "x1 x2 -- x2 x1 : swap two values")\
- X(1, DUP,       "dup",       "u -- u u : duplicate a value")\
- X(1, DROP,      "drop",      "u -- : drop a value")\
- X(2, OVER,      "over",      "x1 x2 -- x1 x2 x1 : copy over a value")\
- X(0, TAIL,      "tail",      " -- : tail recursion")\
- X(0, FIND,      "find",      "c\" xxx\" -- addr | 0 : find a Forth word")\
- X(0, DEPTH,     "depth",     " -- u : get current stack depth")\
- X(0, SPLOAD,    "sp@",       " -- addr : load current stack pointer ")\
- X(0, SPSTORE,   "sp!",       " addr -- : modify the stack pointer")\
- X(0, CLOCK,     "clock",     " -- u : push a time value")\
- X(3, EVALUATOR, "evaluator", "c-addr u 0 | file-id 0 1 -- u : evaluate file/str")\
- X(0, PSTK,      ".s",        " -- : print out values on the stack")\
- X(1, RESTART,   "restart",   " error -- : restart system, cause error")\
- X(0, CALL,      "call",      "n1...nn c -- n1...nn c : call a function")\
- X(2, SYSTEM,    "system",    "c-addr u -- bool : execute system command")\
- X(1, FCLOSE,    "close-file", "file-id -- ior : close a file")\
- X(3, FOPEN,     "open-file",  "c-addr u fam -- open a file")\
- X(2, FDELETE,   "delete-file",     "c-addr u -- ior : delete a file")\
- X(3, FREAD,     "read-file",       "c-addr u file-id -- u ior : write block")\
- X(3, FWRITE,    "write-file",      "c-addr u file-id -- u ior : read block")\
- X(1, FPOS,      "file-position",   "file-id -- u : get the file position")\
- X(2, FSEEK,     "reposition-file", "file-id u -- ior : reposition file")\
- X(1, FFLUSH,    "flush-file",      "file-id -- ior : flush a file")\
- X(4, FRENAME,   "rename-file",     "c-addr1 u1 c-addr2 u2 -- ior : rename file")\
- X(0, TMPFILE,   "temporary-file",  "-- file-id ior : open a temporary file")\
- X(1, RAISE,     "raise",           "signal -- bool : raise a signal")\
- X(0, DATE,      "date",          " -- date : push the time")\
- X(3, MEMMOVE,   "memory-copy",   " r-addr1 r-addr2 u -- : move a block of memory from r-addr2 to r-addr1")\
- X(3, MEMCHR,    "memory-locate", " r-addr char u -- r-addr | 0 : locate a character memory")\
- X(3, MEMSET,    "memory-set",    " r-addr char u -- : set a block of memory")\
- X(3, MEMCMP,    "memory-compare", " r-addr1 r-addr2 u -- u : compare two blocks of memory")\
- X(1, ALLOCATE,  "allocate",       " u -- r-addr ior : allocate a block of memory")\
- X(1, FREE,      "free",           " r-addr1 -- ior : free a block of memory")\
- X(2, RESIZE,    "resize",         " r-addr u -- r-addr ior : resize a block of memory")\
- X(2, GETENV,    "getenv",         " c-addr u -- r-addr u : return an environment variable")\
- X(1, BYE,       "(bye)",          " u -- : bye, bye!")\
- X(0, LAST_INSTRUCTION, NULL, "")
+// #define XMACRO_INSTRUCTIONS\
+//  X(0, PUSH,      "push",      " -- u : push a literal")\
+//  X(0, CONST,     "const",     " -- u : push a literal")\
+//  X(0, RUN,       "run",       " -- : run a Forth word")\
+//  X(0, DEFINE,    "define",    " -- : make new Forth word, set compile mode")\
+//  X(0, IMMEDIATE, "immediate", " -- : make a Forth word immediate")\
+//  X(0, READ,      "read",      " c\" xxx\" -- : read Forth word, execute it")\
+//  X(1, LOAD,      "@",         "addr -- u : load a value")\
+//  X(2, STORE,     "!",         "u addr -- : store a value")\
+//  X(1, CLOAD,     "c@",        "c-addr -- u : load character value")\
+//  X(2, CSTORE,    "c!",        "u c-addr -- : store character value")\
+//  X(2, SUB,       "-",         "u1 u2 -- u3 : subtract u2 from u1 yielding u3")\
+//  X(2, ADD,       "+",         "u u -- u : add two values")\
+//  X(2, AND,       "and",       "u u -- u : bitwise and of two values")\
+//  X(2, OR,        "or",        "u u -- u : bitwise or of two values")\
+//  X(2, XOR,       "xor",       "u u -- u : bitwise exclusive or of two values")\
+//  X(1, INV,       "invert",    "u -- u : invert bits of value")\
+//  X(2, SHL,       "lshift",    "u1 u2 -- u3 : left shift u1 by u2")\
+//  X(2, SHR,       "rshift",    "u1 u2 -- u3 : right shift u1 by u2")\
+//  X(2, MUL,       "*",         "u u -- u : multiply to values")\
+//  X(2, DIV,       "/",         "u1 u2 -- u3 : divide u1 by u2 yielding u3")\
+//  X(2, ULESS,     "u<",        "u u -- bool : unsigned less than")\
+//  X(2, UMORE,     "u>",        "u u -- bool : unsigned greater than")\
+//  X(0, EXIT,      "exit",      " -- : return from a word definition")\
+//  X(0, KEY,       "key",       " -- char : get one character of input")\
+//  X(1, EMIT,      "_emit",     " char -- status : get one character of input")\
+//  X(0, FROMR,     "r>",        " -- u, R: u -- : move from return stack")\
+//  X(1, TOR,       ">r",        "u --, R: -- u : move to return stack")\
+//  X(0, BRANCH,    "branch",    " -- : unconditional branch")\
+//  X(1, QBRANCH,   "?branch",   "u -- : branch if u is zero")\
+//  X(1, PNUM,      "(.)",       "u -- n : print a number returning an error on failure")\
+//  X(1, COMMA,     ",",         "u -- : write a value into the dictionary")\
+//  X(2, EQUAL,     "=",         "u u -- bool : compare two values for equality")\
+//  X(2, SWAP,      "swap",      "x1 x2 -- x2 x1 : swap two values")\
+//  X(1, DUP,       "dup",       "u -- u u : duplicate a value")\
+//  X(1, DROP,      "drop",      "u -- : drop a value")\
+//  X(2, OVER,      "over",      "x1 x2 -- x1 x2 x1 : copy over a value")\
+//  X(0, TAIL,      "tail",      " -- : tail recursion")\
+//  X(0, FIND,      "find",      "c\" xxx\" -- addr | 0 : find a Forth word")\
+//  X(0, DEPTH,     "depth",     " -- u : get current stack depth")\
+//  X(0, SPLOAD,    "sp@",       " -- addr : load current stack pointer ")\
+//  X(0, SPSTORE,   "sp!",       " addr -- : modify the stack pointer")\
+//  X(0, CLOCK,     "clock",     " -- u : push a time value")\
+//  X(3, EVALUATOR, "evaluator", "c-addr u 0 | file-id 0 1 -- u : evaluate file/str")\
+//  X(0, PSTK,      ".s",        " -- : print out values on the stack")\
+//  X(1, RESTART,   "restart",   " error -- : restart system, cause error")\
+//  X(0, CALL,      "call",      "n1...nn c -- n1...nn c : call a function")\
+//  X(2, SYSTEM,    "system",    "c-addr u -- bool : execute system command")\
+//  X(1, FCLOSE,    "close-file", "file-id -- ior : close a file")\
+//  X(3, FOPEN,     "open-file",  "c-addr u fam -- open a file")\
+//  X(2, FDELETE,   "delete-file",     "c-addr u -- ior : delete a file")\
+//  X(3, FREAD,     "read-file",       "c-addr u file-id -- u ior : write block")\
+//  X(3, FWRITE,    "write-file",      "c-addr u file-id -- u ior : read block")\
+//  X(1, FPOS,      "file-position",   "file-id -- u : get the file position")\
+//  X(2, FSEEK,     "reposition-file", "file-id u -- ior : reposition file")\
+//  X(1, FFLUSH,    "flush-file",      "file-id -- ior : flush a file")\
+//  X(4, FRENAME,   "rename-file",     "c-addr1 u1 c-addr2 u2 -- ior : rename file")\
+//  X(0, TMPFILE,   "temporary-file",  "-- file-id ior : open a temporary file")\
+//  X(1, RAISE,     "raise",           "signal -- bool : raise a signal")\
+//  X(0, DATE,      "date",          " -- date : push the time")\
+//  X(3, MEMMOVE,   "memory-copy",   " r-addr1 r-addr2 u -- : move a block of memory from r-addr2 to r-addr1")\
+//  X(3, MEMCHR,    "memory-locate", " r-addr char u -- r-addr | 0 : locate a character memory")\
+//  X(3, MEMSET,    "memory-set",    " r-addr char u -- : set a block of memory")\
+//  X(3, MEMCMP,    "memory-compare", " r-addr1 r-addr2 u -- u : compare two blocks of memory")\
+//  X(1, ALLOCATE,  "allocate",       " u -- r-addr ior : allocate a block of memory")\
+//  X(1, FREE,      "free",           " r-addr1 -- ior : free a block of memory")\
+//  X(2, RESIZE,    "resize",         " r-addr u -- r-addr ior : resize a block of memory")\
+//  X(2, GETENV,    "getenv",         " c-addr u -- r-addr u : return an environment variable")\
+//  X(1, BYE,       "(bye)",          " u -- : bye, bye!")\
+//  X(0, LAST_INSTRUCTION, NULL, "")
 
 /** // @todo Implement these instructions? 
  X(1, MLOAD,     "m@",        "raddr -- u : load a value, non-relative")\
@@ -944,10 +956,13 @@ up for debugging purposes (like **pnum**).
 /**
 @brief All of the instructions that can be used by the Forth virtual machine.
 **/
-enum instructions { 
-#define X(STACK, ENUM, STRING, HELP) ENUM,
-	XMACRO_INSTRUCTIONS
-#undef X
+// enum instructions { 
+// #define X(STACK, ENUM, STRING, HELP) ENUM,
+// 	XMACRO_INSTRUCTIONS
+// #undef X
+// };
+enum instructions {
+ PUSH, CONST, RUN, DEFINE, IMMEDIATE, READ, LOAD, STORE, CLOAD, CSTORE, SUB, ADD, AND, OR, XOR, INV, SHL, SHR, MUL, DIV, ULESS, UMORE, EXIT, KEY, EMIT, FROMR, TOR, BRANCH, QBRANCH, PNUM, COMMA, EQUAL, SWAP, DUP, DROP, OVER, TAIL, FIND, DEPTH, SPLOAD, SPSTORE, CLOCK, EVALUATOR, PSTK, RESTART, CALL, SYSTEM, FCLOSE, FOPEN, FDELETE, FREAD, FWRITE, FPOS, FSEEK, FFLUSH, FRENAME, TMPFILE, RAISE, DATE, MEMMOVE, MEMCHR, MEMSET, MEMCMP, ALLOCATE, FREE, RESIZE, GETENV, BYE, LAST_INSTRUCTION,
 };
 
 /**
@@ -958,68 +973,92 @@ fed into the C function **compile** in a process described later.
 **LAST_INSTRUCTION** is not an instruction, but only a marker of the last
 enumeration used in **enum instructions**, so it does not get a name.
 **/
-static const char *instruction_names[] = { /**< instructions with names */
-#define X(STACK, ENUM, STRING, HELP) STRING,
-	XMACRO_INSTRUCTIONS
-#undef X
+// static const char *instruction_names[] = { /**< instructions with names */
+// #define X(STACK, ENUM, STRING, HELP) STRING,
+// 	XMACRO_INSTRUCTIONS
+// #undef X
+// };
+
+static const char *instruction_names[] = {
+
+ "push", "const", "run", "define", "immediate", "read", "@", "!", "c@", "c!", "-", "+", "and", "or", "xor", "invert", "lshift", "rshift", "*", "/", "u<", "u>", "exit", "key", "_emit", "r>", ">r", "branch", "?branch", "(.)", ",", "=", "swap", "dup", "drop", "over", "tail", "find", "depth", "sp@", "sp!", "clock", "evaluator", ".s", "restart", "call", "system", "close-file", "open-file", "delete-file", "read-file", "write-file", "file-position", "reposition-file", "flush-file", "rename-file", "temporary-file", "raise", "date", "memory-copy", "memory-locate", "memory-set", "memory-compare", "allocate", "free", "resize", "getenv", "(bye)", NULL,
+
 };
 
 /**
 This contains an array of values that are the minimum number of values
 needed on the stack before a word can execute.
 **/
-static const int stack_bounds[] = { /**< number stack variables needed*/
-#define X(STACK, ENUM, STRING, HELP) STACK,
-	XMACRO_INSTRUCTIONS
-#undef X
+// static const int stack_bounds[] = { /**< number stack variables needed*/
+// #define X(STACK, ENUM, STRING, HELP) STACK,
+// 	XMACRO_INSTRUCTIONS
+// #undef X
+// };
+static const int stack_bounds[] = {
+
+ 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 0, 0, 1, 0, 1, 0, 1, 1, 1, 2, 2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 2, 1, 3, 2, 3, 3, 1, 2, 1, 4, 0, 1, 0, 3, 3, 3, 3, 1, 1, 2, 2, 1, 0,
+
 };
 
 /**
 This X-Macro contains a list of constants that will be available to the
 Forth interpreter.
 **/
-#define X_MACRO_CONSTANTS\
- X("dictionary-start",  DICTIONARY_START, "start of dictionary")\
- X("r/o",     FAM_RO, "read only file access method")\
- X("r/w",     FAM_RW, "read/write file access method")\
- X("w/o",     FAM_WO, "write only file access method")\
- X("size",    sizeof(forth_cell_t), "size of forth cell in bytes")\
- X("#tib",    MAXIMUM_WORD_LENGTH * sizeof(forth_cell_t), "")\
- X("tib",     STRING_OFFSET * sizeof(forth_cell_t), "")\
- X("SIGABRT", -SIGABRT+BIAS_SIGNAL, "SIGABRT value")\
- X("SIGFPE",  -SIGFPE +BIAS_SIGNAL, "SIGFPE value")\
- X("SIGILL",  -SIGILL +BIAS_SIGNAL, "SIGILL value")\
- X("SIGINT",  -SIGINT +BIAS_SIGNAL, "SIGINT value")\
- X("SIGSEGV", -SIGSEGV+BIAS_SIGNAL, "SIGSEGV value")\
- X("SIGTERM", -SIGTERM+BIAS_SIGNAL, "SIGTERM value")\
- X("bias-signal", BIAS_SIGNAL,  "bias added to signals")\
- X("bias-errno",  BIAS_ERRNO,   "bias added to errnos")\
- X("instruction-mask", INSTRUCTION_MASK, "instruction mask for CODE field")\
- X("word-mask",   WORD_MASK,    "word length mask for CODE field")\
- X("hidden-bit",  WORD_HIDDEN_BIT_OFFSET, "hide bit in CODE field")\
- X("hidden-mask", 1u << WORD_HIDDEN_BIT_OFFSET, "hide mask for CODE ")\
- X("compile-bit", COMPILING_BIT_OFFSET, "compile/immediate bit in CODE field")\
- X("dolist",      RUN,          "instruction for executing a words body")\
- X("dolit",       2,            "location of fake word for pushing numbers")\
- X("doconst",     CONST,        "instruction for pushing a constant")\
- X("bl",          ' ',          "space character")\
- X("')'",         ')',          "')' character")\
- X("cell",        1,            "space a single cell takes up")
+// #define X_MACRO_CONSTANTS\
+//  X("dictionary-start",  DICTIONARY_START, "start of dictionary")\
+//  X("r/o",     FAM_RO, "read only file access method")\
+//  X("r/w",     FAM_RW, "read/write file access method")\
+//  X("w/o",     FAM_WO, "write only file access method")\
+//  X("size",    sizeof(forth_cell_t), "size of forth cell in bytes")\
+//  X("#tib",    MAXIMUM_WORD_LENGTH * sizeof(forth_cell_t), "")\
+//  X("tib",     STRING_OFFSET * sizeof(forth_cell_t), "")\
+//  X("SIGABRT", -SIGABRT+BIAS_SIGNAL, "SIGABRT value")\
+//  X("SIGFPE",  -SIGFPE +BIAS_SIGNAL, "SIGFPE value")\
+//  X("SIGILL",  -SIGILL +BIAS_SIGNAL, "SIGILL value")\
+//  X("SIGINT",  -SIGINT +BIAS_SIGNAL, "SIGINT value")\
+//  X("SIGSEGV", -SIGSEGV+BIAS_SIGNAL, "SIGSEGV value")\
+//  X("SIGTERM", -SIGTERM+BIAS_SIGNAL, "SIGTERM value")\
+//  X("bias-signal", BIAS_SIGNAL,  "bias added to signals")\
+//  X("bias-errno",  BIAS_ERRNO,   "bias added to errnos")\
+//  X("instruction-mask", INSTRUCTION_MASK, "instruction mask for CODE field")\
+//  X("word-mask",   WORD_MASK,    "word length mask for CODE field")\
+//  X("hidden-bit",  WORD_HIDDEN_BIT_OFFSET, "hide bit in CODE field")\
+//  X("hidden-mask", 1u << WORD_HIDDEN_BIT_OFFSET, "hide mask for CODE ")\
+//  X("compile-bit", COMPILING_BIT_OFFSET, "compile/immediate bit in CODE field")\
+//  X("dolist",      RUN,          "instruction for executing a words body")\
+//  X("dolit",       2,            "location of fake word for pushing numbers")\
+//  X("doconst",     CONST,        "instruction for pushing a constant")\
+//  X("bl",          ' ',          "space character")\
+//  X("')'",         ')',          "')' character")\
+//  X("cell",        1,            "space a single cell takes up")
 
 /**
 @brief A structure that contains a constant to be added to the
 Forth environment by **forth_init**. A constants name, like
 any other Forth word, should be shorter than MAXIMUM_WORD_LENGTH.
 **/
-static struct constants {
-	const char *name; /**< constants name */
-	forth_cell_t value; /**< value of the named constant */
-} constants[] = {
-#define X(NAME, VALUE, DESCRIPTION) { NAME, (VALUE) },
-	X_MACRO_CONSTANTS
-#undef X
-	{ NULL, 0 }
+// static struct constants {
+// 	const char *name; /**< constants name */
+// 	forth_cell_t value; /**< value of the named constant */
+// } constants[] = {
+// #define X(NAME, VALUE, DESCRIPTION) { NAME, (VALUE) },
+// 	X_MACRO_CONSTANTS
+// #undef X
+// 	{ NULL, 0 }
+// };
+
+struct constants {
+ const char *name;
+ forth_cell_t value;
 };
+
+static struct constants constants = {
+
+ { "dictionary-start", (((32u)+(32u))) }, { "r/o", (FAM_RO) }, { "r/w", (FAM_RW) }, { "w/o", (FAM_WO) }, { "size", (sizeof(forth_cell_t)) }, { "#tib", ((32u) * sizeof(forth_cell_t)) }, { "tib", ((32u) * sizeof(forth_cell_t)) }, { "SIGABRT", (-SIGABRT+(-512)) }, { "SIGFPE", (-SIGFPE +(-512)) }, { "SIGILL", (-SIGILL +(-512)) }, { "SIGINT", (-SIGINT +(-512)) }, { "SIGSEGV", (-SIGSEGV+(-512)) }, { "SIGTERM", (-SIGTERM+(-512)) }, { "bias-signal", ((-512)) }, { "bias-errno", ((-256)) }, { "instruction-mask", ((0x7f)) }, { "word-mask", ((0x1f)) }, { "hidden-bit", ((7)) }, { "hidden-mask", (1u << (7)) }, { "compile-bit", ((15)) }, { "dolist", (RUN) }, { "dolit", (2) }, { "doconst", (CONST) }, { "bl", (' ') }, { "')'", (')') }, { "cell", (1) },
+
+ { NULL, 0 }
+};
+
 
 /**
 ## Helping Functions For The Compiler
@@ -1326,30 +1365,8 @@ text interpreter a lot, but not the virtual machine in general.
 forth_cell_t forth_find(forth_t *o, const char *s)
 {
 	forth_cell_t *m = o->m, pwd = m[PWD];
-#ifdef USE_FAST_FIND
-	/* This implements a self organizing list, which speeds
-	 * up the searching of words (which has been profiled), however
-	 * it does not interact well with Forth words like "marker", so
-	 * it is optional. This method uses transposition, move to
-	 * front has not been tested.
-	 *
-	 * See: https://en.wikipedia.org/wiki/Self-organizing_list */
-	forth_cell_t grandparent = pwd, parent = pwd;
-	for (;pwd > DICTIONARY_START && !match(m, pwd, s);) {
-		grandparent = parent;
-		parent = pwd;
-		pwd = m[pwd];
-	}
-	if(pwd > DICTIONARY_START && parent != m[PWD]) { 
-		/* found - transpose it */
-		m[grandparent] = pwd; /* grandparent = current */
-		m[parent] = m[pwd];   /* parent = current next */
-		m[pwd] = parent;      /* new next = parent */
-	} 
-#else
 	for (;pwd > DICTIONARY_START && !match(m, pwd, s);)
 		pwd = m[pwd];
-#endif
 	return pwd > DICTIONARY_START ? pwd + 1 : 0;
 }
 
@@ -2129,14 +2146,11 @@ int forth_run(forth_t *o)
 		if(forth_is_invalid(o))
 			return -1;
 		switch(errorval) {
-			default:
 			case FATAL:
 				forth_invalidate(o);
 				return -1;
-			/* recoverable errors depend on o->m[ERROR_HANDLER],
-			 * a register which can be set within the running
-			 * virtual machine. */
-			case RECOVERABLE:
+			case RECOVERABLE: {
+				// /* recoverable errors depend on o->m[ERROR_HANDLER], a register which can be set within the running virtual machine. */
 				switch(o->m[ERROR_HANDLER]) {
 				case ERROR_INVALIDATE: 
 					forth_invalidate(o);
@@ -2146,8 +2160,12 @@ int forth_run(forth_t *o)
 					o->m[RSTK] = o->core_size - o->m[STACK_SIZE];
 					break;
 				}
+			}
 			case OK: 
 				break;
+			default:
+				forth_invalidate(o);
+				return -1;
 		}
 	}
 	
@@ -2771,11 +2789,8 @@ requires that an error status is returned.
 			rval = f;
 			f = *S--;
 			goto end;
-/**
-This should never happen, and if it does it is an indication that virtual
-machine memory has been corrupted somehow.
-**/
 		default:
+			// /** This should never happen, and if it does it is an indication that virtual machine memory has been corrupted somehow. **/
 			fatal("illegal operation %" PRIdCell, w);
 			longjmp(on_error, FATAL);
 		}
